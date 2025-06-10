@@ -10,22 +10,27 @@
   },
   "dependencies": {
     "@auth/mongodb-adapter": "^3.9.1",
+    "@auth/supabase-adapter": "^1.9.1",
+    "@next-auth/supabase-adapter": "^0.2.1",
+    "@supabase/supabase-js": "^2.50.0",
     "bcrypt": "^6.0.0",
     "mongoose": "^8.15.1",
     "next": "15.3.3",
     "next-auth": "^4.24.11",
+    "nodemailer": "^6.10.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
     "@types/bcrypt": "^5.0.2",
-    "@types/node": "^20",
-    "@types/react": "^19",
+    "@types/next-auth": "^3.13.0",
+    "@types/node": "^20.19.0",
+    "@types/react": "^19.1.6",
     "@types/react-dom": "^19",
     "autoprefixer": "^10.4.21",
     "postcss": "^8.5.4",
     "tailwindcss": "^4.1.8",
-    "typescript": "^5"
+    "typescript": "^5.8.3"
   }
 }

@@ -1,8 +1,9 @@
+// app/auth/page.tsx
 'use client'
 
-import { useState } from 'react'
 import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
+import { useState } from 'react'
 
 export default function AuthPage() {
   const router = useRouter()
@@ -11,7 +12,7 @@ export default function AuthPage() {
   const [isRegister, setIsRegister] = useState(false)
   const [error, setError] = useState('')
 
-  const handleSubmit = async (e: any) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
 
@@ -21,21 +22,28 @@ export default function AuthPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
       })
-
       if (!res.ok) {
-        const data = await res.json()
-        return setError(data.message || 'Failed to register')
+        const { message } = await res.json()
+        return setError(message)
       }
     }
 
     const result = await signIn('credentials', {
-      email,
-      password,
       redirect: false,
+      email,
+      password
     })
 
-    if (result?.error) return setError(result.error)
-    router.push('/')
+    console.log('signIn result →', result)
+
+    if (result?.error) {
+      setError(result.error)
+    } else if (result?.ok) {
+      // now that the session cookie is set (via SessionProvider)…
+      router.push('/')
+    } else {
+      setError('Unexpected signIn response')
+    }
   }
 
   return (
@@ -84,3 +92,9 @@ export default function AuthPage() {
     </main>
   )
 }
+
+
+
+
+
+

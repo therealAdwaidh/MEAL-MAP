@@ -4,6 +4,7 @@
 import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
+import './AuthPage.css' // or use `styles` from a CSS module
 
 export default function AuthPage() {
   const router = useRouter()
@@ -39,7 +40,6 @@ export default function AuthPage() {
     if (result?.error) {
       setError(result.error)
     } else if (result?.ok) {
-      // now that the session cookie is set (via SessionProvider)…
       router.push('/')
     } else {
       setError('Unexpected signIn response')
@@ -47,16 +47,16 @@ export default function AuthPage() {
   }
 
   return (
-    <main className="min-h-screen flex items-center justify-center bg-gray-100">
-      <form onSubmit={handleSubmit} className="bg-white p-8 rounded shadow max-w-md w-full">
-        <h1 className="text-2xl font-bold mb-6">{isRegister ? 'Register' : 'Login'}</h1>
+    <main className="auth-container2">
+      <form onSubmit={handleSubmit} className="auth-form">
+        <h1 className="auth-title">{isRegister ? 'Register' : 'Login'}</h1>
 
-        {error && <p className="text-red-500 mb-4">{error}</p>}
+        {error && <p className="auth-error">{error}</p>}
 
         <input
           type="email"
           placeholder="Email"
-          className="w-full p-2 border mb-4"
+          className="auth-input"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
@@ -65,24 +65,21 @@ export default function AuthPage() {
         <input
           type="password"
           placeholder="Password"
-          className="w-full p-2 border mb-4"
+          className="auth-input"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
         />
 
-        <button
-          type="submit"
-          className="w-full bg-blue-600 text-white p-2 rounded"
-        >
+        <button type="submit" className="auth-button">
           {isRegister ? 'Register & Login' : 'Login'}
         </button>
 
-        <p className="mt-4 text-sm text-center">
+        <p className="auth-toggle">
           {isRegister ? 'Already have an account?' : 'New here?'}
           <button
             type="button"
-            className="text-blue-600 ml-2"
+            className="auth-toggle-button"
             onClick={() => setIsRegister(!isRegister)}
           >
             {isRegister ? 'Login' : 'Register'}
@@ -92,9 +89,3 @@ export default function AuthPage() {
     </main>
   )
 }
-
-
-
-
-
-

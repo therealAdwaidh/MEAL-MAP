@@ -8,14 +8,14 @@ import type { AdapterUser } from 'next-auth/adapters';
 
 
 // Ensure Supabase ENV vars exist
-if (!process.env.SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
+if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
   throw new Error('Missing Supabase environment variables');
 }
 
 // Create admin client
 const supabaseAdmin = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 );
 
 export const authOptions: NextAuthOptions = {
@@ -50,8 +50,8 @@ export const authOptions: NextAuthOptions = {
     })
   ],
   adapter: SupabaseAdapter({
-    url: process.env.SUPABASE_URL,
-    secret: process.env.SUPABASE_SERVICE_ROLE_KEY
+    url: process.env.NEXT_PUBLIC_SUPABASE_URL,
+    secret: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
   }),
   session: {
     strategy: 'jwt'

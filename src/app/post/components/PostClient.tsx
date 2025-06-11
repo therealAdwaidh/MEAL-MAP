@@ -1,7 +1,8 @@
-
 "use client"
-
-import supabase from "@/lib/serverSupabase" 
+import React, { useState, FormEvent } from 'react'
+import { useFood, FoodItem } from '@/context/FoodContext'
+import supabase from "@/lib/serverSupabase"
+import '../post.css'
 
 export default async function HomePage() {
   const { data: items, error } = await supabase

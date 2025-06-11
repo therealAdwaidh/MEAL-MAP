@@ -1,0 +1,71 @@
+/* app/auth/AuthPage.css */
+
+.auth-container2 {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f3f4f6;
+}
+
+.auth-form {
+  background-color: #fff;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  max-width: 400px;
+  width: 100%;
+}
+
+.auth-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.auth-error {
+  color: #ef4444;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.auth-input {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+  font-size: 1rem;
+}
+
+.auth-button {
+  width: 100%;
+  background-color: #2563eb;
+  color: white;
+  padding: 0.5rem;
+  border: none;
+  border-radius: 4px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.auth-button:hover {
+  background-color: #1e40af;
+}
+
+.auth-toggle {
+  margin-top: 1rem;
+  font-size: 0.875rem;
+  text-align: center;
+}
+
+.auth-toggle-button {
+  color: #2563eb;
+  background: none;
+  border: none;
+  margin-left: 0.5rem;
+  cursor: pointer;
+  font-weight: 500;
+}

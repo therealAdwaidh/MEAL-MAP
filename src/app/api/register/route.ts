@@ -1,10 +1,11 @@
 // app/api/register/route.ts
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { serverSupabase } from '@/lib/serverSupabase'
 
 const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  process.env.SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
 export async function POST(req: Request) {
@@ -12,12 +13,14 @@ export async function POST(req: Request) {
   if (!email || !password) return NextResponse.json({ message: 'Missing fields' }, { status: 400 });
 
   // Use Supabase Admin to create the user
-  const { data, error } = await supabaseAdmin.auth.admin.createUser({
-    email,
-    password,
-    email_confirm: true
-  });
+  const { data, error } = await serverSupabase.auth.admin.createUser({
+  email,
+  password
+})
 
-  if (error) return NextResponse.json({ message: error.message }, { status: 500 });
-  return NextResponse.json({ message: 'User created', user: data.user });
+  if (error) {
+  console.error('Supabase Error:', error)
+  return NextResponse.json({ error: error.message }, { status: 500 })
+}
+return NextResponse.json({ user: data.user })
 }

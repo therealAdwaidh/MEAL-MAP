@@ -1,10 +1,10 @@
 
 "use client"
 
-import supabase from "@/lib/serverSupabase" 
+import { serverSupabase } from '@/lib/serverSupabase'
 
 export default async function HomePage() {
-  const { data: items, error } = await supabase
+  const { data: items, error } = await serverSupabase
     .from("food_items")
     .select("*")
 

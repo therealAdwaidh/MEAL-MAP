@@ -1,6 +1,29 @@
+// app/post/page.tsx
+import { serverSupabase } from '@/lib/serverSupabase'
 
-import PostClient from './components/PostClient'
 
-export default function PostPage() {
-  return <PostClient />
+export default async function PostPage() {
+  const { data: items, error } = await serverSupabase
+    .from("food_items")
+    .select("*")
+
+  if (error) {
+    console.error("Supabase fetch error:", error.message)
+    return <p>Error loading items.</p>
+  }
+
+  return (
+    <div>
+      <h1>All Food Items</h1>
+      {items.length === 0
+        ? <p>No items yet.</p>
+        : items.map((item, idx) => (
+            <div key={idx}>
+              <h3>{item.title}</h3>
+              <p>{item.description}</p>
+            </div>
+          ))
+      }
+    </div>
+  )
 }

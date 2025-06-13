@@ -1,11 +1,12 @@
 "use client"
 import React, { useState, FormEvent } from 'react'
-import { useFood, FoodItem } from '@/context/FoodContext'
-import { serverSupabase } from '@/lib/serverSupabase'
+import {  FoodItem } from '@/context/FoodContext'
+import { clientSupabase } from '@/lib/clientSupabase'
 import '../post.css'
 
 export default async function HomePage() {
-  const { data: items, error } = await serverSupabase
+  
+  const { data: items, error } = await clientSupabase
     .from("food_items")
     .select("*")
 

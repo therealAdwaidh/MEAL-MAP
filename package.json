@@ -12,6 +12,7 @@
     "@auth/mongodb-adapter": "^3.9.1",
     "@auth/supabase-adapter": "^1.9.1",
     "@next-auth/supabase-adapter": "^0.2.1",
+    "@prisma/client": "^6.9.0",
     "@supabase/supabase-js": "^2.50.0",
     "bcrypt": "^6.0.0",
     "mongoose": "^8.15.1",
@@ -30,6 +31,7 @@
     "@types/react-dom": "^19",
     "autoprefixer": "^10.4.21",
     "postcss": "^8.5.4",
+    "prisma": "^6.9.0",
     "tailwindcss": "^4.1.8",
     "typescript": "^5.8.3"
   }

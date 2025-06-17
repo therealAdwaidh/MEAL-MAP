@@ -16,11 +16,12 @@ export async function POST(req: Request) {
       },
     })
 
-    // Convert BigInt fields to string or number for JSON
+    // Convert BigInt fields (if any) to serializable values
     const safeItem = {
       ...item,
-      id: item.id.toString(), // or use Number(item.id) if you prefer
-      quantity: Number(item.quantity),
+      id: typeof item.id === 'bigint' ? item.id.toString() : item.id,
+      quantity: typeof item.quantity === 'bigint' ? Number(item.quantity) : item.quantity,
+      rate: typeof item.rate === 'bigint' ? Number(item.rate) : item.rate,
     }
 
     return NextResponse.json(safeItem)

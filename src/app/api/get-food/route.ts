@@ -3,7 +3,7 @@ import { prisma } from '@/lib/prisma'
 import { NextResponse } from 'next/server'
 
 export async function GET() {
-  const items = await prisma.foodItem.findMany({orderBy: {createdAt:'desc'}})
+  const items = await prisma.food_items.findMany({orderBy: {createdAt:'desc'}})
 
   // Transform BigInt IDs to string
   const safeItems = items.map((item) => ({

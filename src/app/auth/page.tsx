@@ -14,37 +14,39 @@ export default function AuthPage() {
   const [error, setError] = useState('')
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError('')
+  e.preventDefault()
+  setError('')
 
-    if (isRegister) {
-      const res = await fetch('/api/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-      })
-      if (!res.ok) {
-        const { message } = await res.json()
-        return setError(message)
-      }
-    }
-
-    const result = await signIn('credentials', {
-      redirect: false,
-      email,
-      password
+  if (isRegister) {
+    const res = await fetch('/api/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password }),
     })
 
-    console.log('signIn result →', result)
+    const data = await res.json()
 
-    if (result?.error) {
-      setError(result.error)
-    } else if (result?.ok) {
-      router.push('/')
-    } else {
-      setError('Unexpected signIn response')
+    if (!res.ok) {
+      return setError(data.error || data.message || 'Registration failed')
     }
+
+    // Wait for user creation, now attempt login manually
   }
+
+  const result = await signIn('credentials', {
+    redirect: false,
+    email,
+    password,
+  })
+
+  if (result?.error) {
+    setError(result.error)
+  } else if (result?.ok) {
+    router.push('/')
+  } else {
+    setError('Unexpected signIn response')
+  }
+}
 
   return (
     <main className="auth-container2">

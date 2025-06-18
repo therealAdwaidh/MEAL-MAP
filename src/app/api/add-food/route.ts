@@ -1,3 +1,4 @@
+// app/api/add-food/route.ts
 import { prisma } from '@/lib/prisma'
 import { NextResponse } from 'next/server'
 
@@ -6,7 +7,7 @@ export async function POST(req: Request) {
     const body = await req.json()
     const { title, description, image, rate, quantity } = body
 
-    const item = await prisma.foodItem.create({
+    const item = await prisma.food_items.create({
       data: {
         title,
         description,

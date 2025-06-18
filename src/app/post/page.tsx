@@ -1,8 +1,15 @@
+//app/post/page.tsx
 'use client'
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import './post.css'
+import { getCsrfToken } from 'next-auth/react';
+import HomeButton from '@/components/HomeButton'
+
+const csrfToken = await getCsrfToken();
+
+
 
 export default function PostPage() {
   const router = useRouter()
@@ -34,32 +41,39 @@ export default function PostPage() {
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+  e.preventDefault()
+  console.log('handleSubmit triggered') // <--- Add this
     try {
       const res = await fetch('/api/add-food', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          title: form.title,
-          description: form.description,
-          image: form.image,                  // send base64
-          rate: parseFloat(form.rate),
-          quantity: parseInt(form.quantity, 10),
-        })
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+      title: form.title,
+      description: form.description,
+      image: form.image,
+      rate: parseFloat(form.rate),
+      quantity: parseInt(form.quantity, 10),
+        }),
       })
+      console.log('response received:', res)
+      console.log('response status:', res.status)
+
       if (res.ok) {
-        setForm({ title: '', description: '', image: '', rate: '', quantity: '' })
-        router.push('/')  // back to home list
-      } else {
-        console.error(await res.json())
+      console.log('Form submitted successfully. Redirecting...')
+      window.location.href = '/' // ← use this instead of router.push('/')
       }
-    } catch (err) {
+
+
+    } 
+    
+    catch (err) {
       console.error(err)
     }
   }
 
   return (
     <main className="food-form-container">
+      <HomeButton/>
       <h1 className="main-title">Add Food Item</h1>
       <form onSubmit={handleSubmit} className="food-form">
         <input

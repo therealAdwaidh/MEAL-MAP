@@ -1,3 +1,4 @@
+// src/lib/authOptions.ts
 import { createClient } from '@supabase/supabase-js'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import { SupabaseAdapter } from '@next-auth/supabase-adapter'
@@ -20,12 +21,23 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         const { email, password } = credentials ?? {}
-        if (!email || !password) return null
+
+        if (!email || !password) {
+          console.error('Missing email or password')
+          return null
+        }
 
         const { data, error } = await supabase.auth.signInWithPassword({ email, password })
-        if (error || !data.user) return null
 
-        return { id: data.user.id, email: data.user.email }
+        if (error || !data.user) {
+          console.error('Login failed:', error?.message || 'Invalid credentials')
+          return null
+        }
+
+        return {
+          id: data.user.id,
+          email: data.user.email
+        }
       }
     })
   ],
@@ -48,6 +60,9 @@ export const authOptions: NextAuthOptions = {
     }
   },
 
-  pages: { signIn: '/auth' },
+  pages: {
+    signIn: '/auth'
+  },
+
   debug: process.env.NODE_ENV === 'development'
 }

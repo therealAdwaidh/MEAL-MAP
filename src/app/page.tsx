@@ -1,7 +1,11 @@
+//app/page.tsx
 'use client'
 
 import { useState, useEffect } from 'react'
 import './globals.css'
+import LogoutButton from '@/components/LogoutButton'
+import PostButton from '@/components/PostButton'
+
 
 export default function HomePage() {
   const [items, setItems] = useState<any[]>([])
@@ -18,6 +22,8 @@ export default function HomePage() {
 
   return (
     <main className="food-form-container">
+       <LogoutButton />
+       <PostButton />
       <h1 className="main-title">Add Food Item</h1>
       {/* (You could reuse the form here if you like) */}
 

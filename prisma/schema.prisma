@@ -1,6 +1,10 @@
 generator client {
-  provider = "prisma-client-js"
-  output   = "../src/generated/prisma"
+  provider          = "prisma-client-js"
+  previewFeatures   = ["interactiveTransactions"]
+  binaryTargets     = ["native"]
+  output            = "../src/generated/prisma"
+  engineType        = "binary"
+  jsDocGeneration   = true
 }
 
 datasource db {
@@ -8,15 +12,12 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
-model FoodItem {
+model food_items {
   id          BigInt   @id @default(autoincrement()) @map("id")
   createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
   title       String?
   description String?
   image       String?
-  rate        Float 
+  rate        Float
   quantity    Int
-  
 }

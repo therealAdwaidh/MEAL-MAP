@@ -2,6 +2,7 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { serverSupabase } from '@/lib/serverSupabase'
+import { prisma } from '@/lib/prisma'
 
 // --- In-memory rate limiter ---
 const rateLimitMap = new Map<string, { count: number, timestamp: number }>()
@@ -40,16 +41,25 @@ export async function POST(req: Request) {
     return NextResponse.json({ message: 'Missing fields' }, { status: 400 })
   }
 
+  // 1. Create user in Supabase
   const { data, error } = await serverSupabase.auth.admin.createUser({
     email,
     password,
-    email_confirm: true // ✅ required for login
+    email_confirm: true
   })
 
   if (error) {
     console.error('Supabase Error:', error)
     return NextResponse.json({ error: error.message }, { status: 500 })
   }
+
+  // 2. Create user in Prisma with a default image
+  await prisma.user.create({
+    data: {
+      email,
+      image: '/image4.webp'
+    }
+  })
 
   return NextResponse.json({ user: data.user })
 }

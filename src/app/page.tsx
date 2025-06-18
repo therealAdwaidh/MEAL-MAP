@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react'
 import './globals.css'
 import LogoutButton from '@/components/LogoutButton'
 import PostButton from '@/components/PostButton'
-
+import UserProfileButton from '@/components/UserProfileButton'
 
 export default function HomePage() {
   const [items, setItems] = useState<any[]>([])
@@ -24,7 +24,8 @@ export default function HomePage() {
     <main className="food-form-container">
        <LogoutButton />
        <PostButton />
-      <h1 className="main-title">Add Food Item</h1>
+       <UserProfileButton />
+      <h1 className="main-title"> Food Items</h1>
       {/* (You could reuse the form here if you like) */}
 
       <h2 className="section-title">Food Items</h2>

@@ -40,31 +40,38 @@ export default function AuthPage() {
     setError('')
     setIsLoading(true)
 
-    const res = await fetch('/api/register', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password }),
-    })
+    try {
+      const res = await fetch('/api/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      })
 
-    const data = await res.json()
-    if (!res.ok) {
+      const data = await res.json()
+      if (!res.ok) {
+        setIsLoading(false)
+        return setError(data.error || 'Registration failed')
+      }
+
+      // Wait briefly to ensure Supabase user is synced
+      await new Promise((resolve) => setTimeout(resolve, 1200))
+
+      const result = await signIn('credentials', {
+        redirect: false,
+        email,
+        password,
+      })
+
+      if (result?.error) {
+        setError(result.error)
+      } else {
+        router.push('/')
+      }
+    } catch (err) {
+      setError('Unexpected error during registration.')
+    } finally {
       setIsLoading(false)
-      return setError(data.error || 'Registration failed')
     }
-
-    const result = await signIn('credentials', {
-      redirect: false,
-      email,
-      password,
-    })
-
-    if (result?.error) {
-      setError(result.error)
-    } else {
-      router.push('/')
-    }
-
-    setIsLoading(false)
   }
 
   return (

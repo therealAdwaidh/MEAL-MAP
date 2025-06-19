@@ -44,14 +44,24 @@ export async function POST(req: Request) {
   }
 
   try {
- 
-    // 1. Check if user already exists (manual email match)
-     const existing = await prisma.user.findUnique({ where: { email } })
-    if (existing) {
-      return NextResponse.json({ error: 'User already exists' }, { status: 409 })
+    // 1. Check if user already exists using safe fallback
+    let existing = null
+    try {
+      existing = await prisma.user.findUnique({ where: { email } })
+    } catch (err: any) {
+      console.error('Prisma findUnique error:', err.message)
+      return NextResponse.json(
+        { error: 'Database error when checking for existing user' },
+        { status: 500 }
+      )
     }
 
-
+    if (existing) {
+      return NextResponse.json(
+        { error: 'A user with this email already exists.' },
+        { status: 409 }
+      )
+    }
 
     // 2. Create user in Supabase
     const { data, error } = await serverSupabase.auth.admin.createUser({
@@ -70,11 +80,11 @@ export async function POST(req: Request) {
       await prisma.user.create({
         data: {
           email,
-          image: '/image4.webp', // default image
+          image: '/image4.webp',
         },
       })
     } catch (err: any) {
-      console.error('Prisma Error:', err.message)
+      console.error('Prisma create error:', err.message)
       return NextResponse.json({ error: 'Database user creation failed' }, { status: 500 })
     }
 

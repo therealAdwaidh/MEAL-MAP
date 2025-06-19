@@ -1,23 +1,45 @@
-// app/auth/page.tsx
 'use client'
 
+import { useState } from 'react'
 import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
-import { useState } from 'react'
-import './AuthPage.css' // or use `styles` from a CSS module
+import './AuthPage.css'
 
 export default function AuthPage() {
   const router = useRouter()
+  const [step, setStep] = useState<'select' | 'login' | 'register'>('select')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [isRegister, setIsRegister] = useState(false)
   const [error, setError] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
 
-  const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault()
-  setError('')
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setError('')
+    setIsLoading(true)
 
-  if (isRegister) {
+    const result = await signIn('credentials', {
+      redirect: false,
+      email,
+      password,
+    })
+
+    if (result?.error) {
+      setError(result.error)
+    } else if (result?.ok) {
+      router.push('/')
+    } else {
+      setError('Login failed unexpectedly')
+    }
+
+    setIsLoading(false)
+  }
+
+  const handleRegister = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setError('')
+    setIsLoading(true)
+
     const res = await fetch('/api/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -25,69 +47,109 @@ export default function AuthPage() {
     })
 
     const data = await res.json()
-
     if (!res.ok) {
-      return setError(data.error || data.message || 'Registration failed')
+      setIsLoading(false)
+      return setError(data.error || 'Registration failed')
     }
 
-    // Wait for user creation, now attempt login manually
-  }
+    const result = await signIn('credentials', {
+      redirect: false,
+      email,
+      password,
+    })
 
-  const result = await signIn('credentials', {
-    redirect: false,
-    email,
-    password,
-  })
+    if (result?.error) {
+      setError(result.error)
+    } else {
+      router.push('/')
+    }
 
-  if (result?.error) {
-    setError(result.error)
-  } else if (result?.ok) {
-    router.push('/')
-  } else {
-    setError('Unexpected signIn response')
+    setIsLoading(false)
   }
-}
 
   return (
-    <main className="auth-container2">
-      <form onSubmit={handleSubmit} className="auth-form">
-        <h1 className="auth-title">{isRegister ? 'Register' : 'Login'}</h1>
+    <main className="auth-container">
+      {step === 'select' && (
+        <div className="auth-select">
+          <h1>Welcome</h1>
+          <div className="auth-options">
+            <button onClick={() => setStep('login')}>I already have an account</button>
+            <button onClick={() => setStep('register')}>I'm a new user</button>
+          </div>
+        </div>
+      )}
 
-        {error && <p className="auth-error">{error}</p>}
+      {step === 'login' && (
+        <form onSubmit={handleLogin} className="auth-form">
+          <h2>Login</h2>
+          {error && <p className="auth-error">{error}</p>}
 
-        <input
-          type="email"
-          placeholder="Email"
-          className="auth-input"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
-
-        <input
-          type="password"
-          placeholder="Password"
-          className="auth-input"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-
-        <button type="submit" className="auth-button">
-          {isRegister ? 'Register & Login' : 'Login'}
-        </button>
-
-        <p className="auth-toggle">
-          {isRegister ? 'Already have an account?' : 'New here?'}
-          <button
-            type="button"
-            className="auth-toggle-button"
-            onClick={() => setIsRegister(!isRegister)}
-          >
-            {isRegister ? 'Login' : 'Register'}
+          <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+          <button type="submit" disabled={isLoading}>
+            {isLoading ? 'Logging in...' : 'Login'}
           </button>
-        </p>
-      </form>
+
+          <p>
+            New here?{' '}
+            <button
+              type="button"
+              className="auth-link"
+              onClick={() => setStep('register')}
+            >
+              Register
+            </button>
+          </p>
+        </form>
+      )}
+
+      {step === 'register' && (
+        <form onSubmit={handleRegister} className="auth-form">
+          <h2>Register</h2>
+          {error && <p className="auth-error">{error}</p>}
+
+          <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+          <button type="submit" disabled={isLoading}>
+            {isLoading ? 'Registering...' : 'Register'}
+          </button>
+
+          <p>
+            Already have an account?{' '}
+            <button
+              type="button"
+              className="auth-link"
+              onClick={() => setStep('login')}
+            >
+              Login
+            </button>
+          </p>
+        </form>
+      )}
     </main>
   )
 }

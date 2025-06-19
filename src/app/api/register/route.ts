@@ -1,9 +1,11 @@
+// app/api/register/route.ts
 import { NextResponse } from 'next/server'
+import { createClient } from '@supabase/supabase-js'
 import { serverSupabase } from '@/lib/serverSupabase'
 import { prisma } from '@/lib/prisma'
 
 // --- In-memory rate limiter ---
-const rateLimitMap = new Map<string, { count: number; timestamp: number }>()
+const rateLimitMap = new Map<string, { count: number, timestamp: number }>()
 
 function isRateLimited(ip: string, limit = 5, interval = 10 * 60 * 1000) {
   const now = Date.now()
@@ -31,66 +33,33 @@ export async function POST(req: Request) {
   const ip = req.headers.get('x-forwarded-for') || 'local-ip'
 
   if (isRateLimited(ip)) {
-    return NextResponse.json(
-      { error: 'Too many requests. Please try again later.' },
-      { status: 429 }
-    )
+    return NextResponse.json({ error: 'Too many requests. Please try again later.' }, { status: 429 })
   }
 
   const { email, password } = await req.json()
-
   if (!email || !password) {
-    return NextResponse.json({ error: 'Missing email or password' }, { status: 400 })
+    return NextResponse.json({ message: 'Missing fields' }, { status: 400 })
   }
 
-  try {
-    // 1. Check if user already exists using safe fallback
-    let existing = null
-    try {
-      existing = await prisma.user.findUnique({ where: { email } })
-    } catch (err: any) {
-      console.error('Prisma findUnique error:', err.message)
-      return NextResponse.json(
-        { error: 'Database error when checking for existing user' },
-        { status: 500 }
-      )
-    }
+  // 1. Create user in Supabase
+  const { data, error } = await serverSupabase.auth.admin.createUser({
+    email,
+    password,
+    email_confirm: true
+  })
 
-    if (existing) {
-      return NextResponse.json(
-        { error: 'A user with this email already exists.' },
-        { status: 409 }
-      )
-    }
+  if (error) {
+    console.error('Supabase Error:', error)
+    return NextResponse.json({ error: error.message }, { status: 500 })
+  }
 
-    // 2. Create user in Supabase
-    const { data, error } = await serverSupabase.auth.admin.createUser({
+  // 2. Create user in Prisma with a default image
+  await prisma.user.create({
+    data: {
       email,
-      password,
-      email_confirm: true,
-    })
-
-    if (error) {
-      console.error('Supabase Error:', error.message)
-      return NextResponse.json({ error: error.message }, { status: 500 })
+      image: '/image4.webp'
     }
+  })
 
-    // 3. Save user in Prisma
-    try {
-      await prisma.user.create({
-        data: {
-          email,
-          image: '/image4.webp',
-        },
-      })
-    } catch (err: any) {
-      console.error('Prisma create error:', err.message)
-      return NextResponse.json({ error: 'Database user creation failed' }, { status: 500 })
-    }
-
-    return NextResponse.json({ user: data.user }, { status: 200 })
-  } catch (err: any) {
-    console.error('Unexpected Error:', err.message)
-    return NextResponse.json({ error: 'Something went wrong' }, { status: 500 })
-  }
+  return NextResponse.json({ user: data.user })
 }

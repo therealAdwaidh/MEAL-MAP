@@ -14,9 +14,65 @@ export default function AuthPage() {
   const [isLoading, setIsLoading] = useState(false)
 
   const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError('')
-    setIsLoading(true)
+  e.preventDefault()
+  setError('')
+  setIsLoading(true)
+
+  const result = await signIn('credentials', {
+    redirect: false,
+    email,
+    password,
+  })
+
+  if (result?.error) {
+    setError(result.error)
+  } else if (result?.ok) {
+    try {
+      // fetch userId after login
+      const meRes = await fetch('/api/me')
+      const meData = await meRes.json()
+      if (meData.id) {
+        localStorage.setItem('userId', meData.id)
+        console.log('userId restored after login:', meData.id)
+      } else {
+        console.warn('userId missing after login')
+      }
+    } catch (err) {
+      console.error('Failed to fetch /api/me:', err)
+    }
+
+    router.push('/')
+  } else {
+    setError('Login failed unexpectedly')
+  }
+
+  setIsLoading(false)
+}
+
+
+ const handleRegister = async (e: React.FormEvent) => {
+  e.preventDefault()
+  setError('')
+  setIsLoading(true)
+
+  try {
+    const res = await fetch('/api/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password }),
+    })
+
+    const data = await res.json()
+    if (!res.ok) {
+      setIsLoading(false)
+      return setError(data.error || 'Registration failed')
+    }
+
+    // We do not store here to avoid race with redirect
+    // Instead, store after signIn below
+
+    // Wait briefly to ensure Supabase sync
+    await new Promise((resolve) => setTimeout(resolve, 1200))
 
     const result = await signIn('credentials', {
       redirect: false,
@@ -27,52 +83,32 @@ export default function AuthPage() {
     if (result?.error) {
       setError(result.error)
     } else if (result?.ok) {
+      // fetch from /api/me to store Prisma ID reliably
+      try {
+        const meRes = await fetch('/api/me')
+        const meData = await meRes.json()
+        if (meData.id) {
+          localStorage.setItem("userId", meData.id)
+          console.log("userId restored after register/login:", meData.id)
+        } else {
+          console.warn("userId missing after register/login")
+        }
+      } catch (err) {
+        console.error("Failed to fetch /api/me after register:", err)
+      }
+
       router.push('/')
     } else {
       setError('Login failed unexpectedly')
     }
-
+  } catch (err) {
+    setError('Unexpected error during registration.')
+  } finally {
     setIsLoading(false)
   }
+}
 
-  const handleRegister = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError('')
-    setIsLoading(true)
 
-    try {
-      const res = await fetch('/api/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-      })
-
-      const data = await res.json()
-      if (!res.ok) {
-        setIsLoading(false)
-        return setError(data.error || 'Registration failed')
-      }
-
-      // Wait briefly to ensure Supabase user is synced
-      await new Promise((resolve) => setTimeout(resolve, 1200))
-
-      const result = await signIn('credentials', {
-        redirect: false,
-        email,
-        password,
-      })
-
-      if (result?.error) {
-        setError(result.error)
-      } else {
-        router.push('/')
-      }
-    } catch (err) {
-      setError('Unexpected error during registration.')
-    } finally {
-      setIsLoading(false)
-    }
-  }
 
   return (
     <main className="auth-container">

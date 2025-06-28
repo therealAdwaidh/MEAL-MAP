@@ -1,11 +1,9 @@
-// app/api/register/route.ts
 import { NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
-import { serverSupabase } from '@/lib/serverSupabase'
 import { prisma } from '@/lib/prisma'
+import { serverSupabase } from '@/lib/serverSupabase'
 
 // --- In-memory rate limiter ---
-const rateLimitMap = new Map<string, { count: number, timestamp: number }>()
+const rateLimitMap = new Map<string, { count: number; timestamp: number }>()
 
 function isRateLimited(ip: string, limit = 5, interval = 10 * 60 * 1000) {
   const now = Date.now()
@@ -33,7 +31,10 @@ export async function POST(req: Request) {
   const ip = req.headers.get('x-forwarded-for') || 'local-ip'
 
   if (isRateLimited(ip)) {
-    return NextResponse.json({ error: 'Too many requests. Please try again later.' }, { status: 429 })
+    return NextResponse.json(
+      { error: 'Too many requests. Please try again later.' },
+      { status: 429 }
+    )
   }
 
   const { email, password } = await req.json()
@@ -45,7 +46,7 @@ export async function POST(req: Request) {
   const { data, error } = await serverSupabase.auth.admin.createUser({
     email,
     password,
-    email_confirm: true
+    email_confirm: true,
   })
 
   if (error) {
@@ -54,12 +55,18 @@ export async function POST(req: Request) {
   }
 
   // 2. Create user in Prisma with a default image
-  await prisma.user.create({
+  const userInPrisma = await prisma.user.create({
     data: {
       email,
-      image: '/image4.webp'
-    }
+      image: '/image4.webp',
+    },
   })
 
-  return NextResponse.json({ user: data.user })
+  // ✅ response with Prisma user ID
+  return NextResponse.json({
+    user: {
+      id: userInPrisma.id,     // this is the Prisma id!
+      email: userInPrisma.email,
+    },
+  })
 }

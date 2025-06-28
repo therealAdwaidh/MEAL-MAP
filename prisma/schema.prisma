@@ -13,19 +13,25 @@ datasource db {
 }
 
 model food_items {
-  id          BigInt   @id @default(autoincrement()) @map("id")
+  id          String   @id @default(cuid())
   title       String?
   description String?
   image       String?
   rate        Float
   quantity    Int
   createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
 }
+
 
 model User {
   id        String   @id @default(cuid())
   email     String   @unique
   name      String?
   image     String?
+  bio       String?
   createdAt DateTime @default(now())
+  food_items food_items[]
 }

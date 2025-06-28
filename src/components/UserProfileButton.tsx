@@ -17,13 +17,15 @@ export default function UserProfileButton() {
 // fallback image
 
   return (
-    <button
+
+    <div className="">
+         <button
       onClick={() => router.push('/profile')}
       style={{
         background: 'none',
-        border: 'none',
+        border: 'black',
         cursor: 'pointer',
-        padding: 0,
+       padding: '10px 0px 0px 0px',
         margin: 0
       }}
       title="View Profile"
@@ -40,5 +42,9 @@ export default function UserProfileButton() {
         }}
       />
     </button>
+
+    
+    </div>
+   
   )
 }

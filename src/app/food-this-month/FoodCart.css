@@ -1,0 +1,104 @@
+.food-cart-container {
+  max-width: 600px;
+  margin: 2rem auto;
+  font-family: sans-serif;
+}
+
+.cart-title {
+  text-align: center;
+  font-weight: bold;
+  margin: 1rem;
+}
+
+.cart-divider {
+  border: 0;
+  height: 1px;
+  background-color: #ccc;
+  margin-bottom: 1rem;
+}
+
+.cart-items-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 1rem;
+}
+
+.cart-card {
+  background: #f3eefc;
+  border-radius: 12px;
+  padding: 0.8rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.cart-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.cart-avatar {
+  background: #d6c1f0;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  text-align: center;
+  font-weight: bold;
+  line-height: 32px;
+}
+
+.cart-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.cart-name {
+  font-weight: 600;
+}
+
+.cart-description {
+  font-size: 0.8rem;
+  color: #555;
+}
+
+.cart-price {
+  background: #5b4b8a;
+  color: #fff;
+  border-radius: 20px;
+  padding: 0.5rem 1rem;
+  font-weight: bold;
+  font-size: 0.9rem;
+}
+
+.cart-total-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #5b4b8a;
+  color: white;
+  margin-top: 1.5rem;
+  border-radius: 10px;
+  padding: 1rem;
+  font-weight: bold;
+}
+
+.cart-total-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.cart-total-amount {
+  background: #423369;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+}
+
+.empty-state {
+  text-align: center;
+  color: #666;
+  margin: 2rem 0;
+}

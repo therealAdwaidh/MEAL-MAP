@@ -1,24 +1,26 @@
 'use client'
 
-import { useRouter } from 'next/navigation'
-
 export default function PostButton() {
-  const router = useRouter()
+  const handleClick = () => {
+    // Redirect to '/' and refresh the page
+    window.location.href = '/'
+  }
 
   return (
-    <button
-      onClick={() => router.push('/')}
+    <img
+      width={80}
+      height={80}
+      onClick={handleClick}
       style={{
         padding: '10px 16px',
-        backgroundColor: '#2b6cb0',
         color: '#fff',
         border: 'none',
         borderRadius: '6px',
         cursor: 'pointer',
         marginTop: '1rem'
       }}
-    >
-      Home
-    </button>
+      src="/home.png"
+      alt="Home"
+    />
   )
 }

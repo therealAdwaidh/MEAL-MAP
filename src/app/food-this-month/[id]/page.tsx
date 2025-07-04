@@ -1,3 +1,4 @@
+//src/app/food-this-month/[id]/page.tsx
 import { prisma } from '@/lib/prisma';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
@@ -6,11 +7,14 @@ import HomeButton from '@/components/HomeButton';
 import BackButton from '@/components/BackButton';
 
 
-export default async function FoodItemPage({ params }: { params: { id: string } }) {
-  console.log('✅ Dynamic route hit with ID:', params.id);
+export default async function FoodItemPage(props: { params:Promise< { id: string }> }) {
+  const { params } = props;  // safely get params
+  const id = (await params).id;      // get id
+
+  console.log('✅ Dynamic route hit with ID:', id);
 
   const item = await prisma.food_items.findUnique({
-    where: { id: params.id },
+    where: { id },
   });
 
   if (!item) return notFound();
@@ -34,10 +38,9 @@ export default async function FoodItemPage({ params }: { params: { id: string } 
           <p><strong>Available Quantity:</strong> {item.quantity}</p>
           <p><strong>Posted:</strong> {new Date(item.createdAt).toLocaleString()}</p>
           <BackButton id={item.id} />
-
-
         </div>
       </div>
     </main>
   );
 }
+

@@ -8,6 +8,8 @@ import PostButton from '@/components/PostButton'
 import UserProfileButton from '@/components/UserProfileButton'
 import { useRouter } from 'next/navigation'
 import AnimatedLink from "@/components/AnimatedLink";
+import MyPostsButton from '@/components/MyPostsButton'
+import GoToFoodThisMonthButton from '@/components/GoToFoodThisMonthButton';
 
 export default function HomePage() {
   const [items, setItems] = useState<any[]>([])
@@ -33,6 +35,8 @@ export default function HomePage() {
   <div className="flex">
     <LogoutButton />
     <PostButton />
+    <MyPostsButton/>
+    <GoToFoodThisMonthButton />
     <UserProfileButton />
   </div>
   <h1 className="main-title">🍽️ Foods for Tomorrow</h1>

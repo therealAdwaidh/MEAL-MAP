@@ -39,6 +39,26 @@ export const authOptions: NextAuthOptions = {
     })
   ],
 
+  events: {
+    async signIn({ user }) {
+      if (user.email) {
+        await prisma.user.upsert({
+          where: { email: user.email },
+          update: {
+            name: user.name ?? '',
+            image: user.image ?? '',
+          },
+          create: {
+            id: user.id, // use Supabase user id
+            email: user.email,
+            name: user.name ?? '',
+            image: user.image ?? '',
+          }
+        });
+      }
+    },
+  },
+
   adapter: SupabaseAdapter({
     url: process.env.NEXT_PUBLIC_SUPABASE_URL!,
     secret: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!

@@ -146,6 +146,9 @@ button:hover {
   background-color: #0056b3;
 }
 
+
+
+
 .items-list {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -161,6 +164,8 @@ button:hover {
   box-shadow: 0 8px 16px rgba(0,0,0,0.08);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   cursor: pointer;
+  max-width: 320px;  /* stops cards growing too wide */
+  margin: 0 auto;
 }
 
 .item-card:hover {
@@ -331,68 +336,7 @@ button:hover {
   transform: translateY(-1px);
 }
 
-.items-list {
-  list-style: none;
-  padding: 0 30px 30px 30px;
-}
 
-.item-card {
-  background: #f8f9fa;
-  border-radius: 10px;
-  padding: 20px;
-  margin-bottom: 15px;
-  border-left: 4px solid #667eea;
-  transition: all 0.3s ease;
-  position: relative;
-  overflow: hidden;
-}
-
-.item-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, #667eea, #764ba2);
-  transform: scaleX(0);
-  transition: transform 0.3s ease;
-}
-
-.item-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-}
-
-.item-card:hover::before {
-  transform: scaleX(1);
-}
-
-.item-content {
-  display: flex;
-  flex-direction: column;
-}
-
-.item-header {
-  font-size: 1.3rem;
-  font-weight: 700;
-  color: #2c3e50;
-  margin-bottom: 8px;
-}
-
-.item-description {
-  color: #7f8c8d;
-  margin-bottom: 15px;
-  line-height: 1.5;
-}
-
-.item-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 10px;
-}
 
 .price-tag {
   background: linear-gradient(135deg, #ff6b6b, #ee5a24);

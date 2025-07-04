@@ -1,25 +1,30 @@
-'use client'
+"use client"
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
-import './post.css'
-import { getCsrfToken } from 'next-auth/react'
-import HomeButton from '@/components/HomeButton'
-
-// optional CSRF, but leaving it since you had it
-const csrfToken = await getCsrfToken();
+import { useEffect, useState } from "react"
+import { useRouter } from "next/navigation"
+import { getCsrfToken } from "next-auth/react"
+import "./post.css"
+import HomeButton from "@/components/HomeButton"
 
 export default function PostPage() {
   const router = useRouter()
+  const [csrfToken, setCsrfToken] = useState<string | undefined>()
   const [form, setForm] = useState({
-    title: '',
-    description: '',
-    image: '', // base64
-    rate: '',
-    quantity: '',
+    title: "",
+    description: "",
+    image: "",
+    rate: "",
+    quantity: "",
   })
 
-  // Read file as Data URL
+  // get CSRF token on mount
+  useEffect(() => {
+    getCsrfToken().then(token => {
+      setCsrfToken(token)
+      console.log("CSRF token loaded:", token)
+    })
+  }, [])
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0]
@@ -27,58 +32,59 @@ export default function PostPage() {
       reader.onloadend = () => {
         setForm(prev => ({
           ...prev,
-          image: reader.result as string
+          image: reader.result as string,
         }))
       }
       reader.readAsDataURL(file)
     }
   }
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     setForm(prev => ({ ...prev, [e.target.name]: e.target.value }))
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    console.log('handleSubmit triggered')
+    console.log("handleSubmit triggered")
 
-    // retrieve userId from localStorage
-    const userId = localStorage.getItem('userId')
+    const userId = localStorage.getItem("userId")
     if (!userId) {
-      console.error('No userId found in localStorage — please log in first')
-      alert('Please log in before posting a food item.')
+      console.error("No userId found in localStorage — please log in first")
+      alert("Please log in before posting a food item.")
       return
     }
 
     try {
-      const res = await fetch('/api/add-food', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const res = await fetch("/api/add-food", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           title: form.title,
           description: form.description,
           image: form.image,
           rate: parseFloat(form.rate),
           quantity: parseInt(form.quantity, 10),
-          userId: userId,  // ✅ now included
+          userId,
+          csrfToken, // ✅ you could include it here if your API expects it
         }),
       })
 
-      console.log('response received:', res)
-      console.log('response status:', res.status)
+      console.log("response received:", res)
+      console.log("response status:", res.status)
 
       if (res.ok) {
-  console.log('Form submitted successfully. Redirecting with refresh...')
-  window.location.href = '/'
-}
- else {
+        console.log("Form submitted successfully. Redirecting with refresh...")
+        window.location.href = "/"
+      } else {
         const errorData = await res.json()
-        console.error('Submission error:', errorData)
+        console.error("Submission error:", errorData)
         alert(`Error: ${errorData.error || errorData.message}`)
       }
     } catch (err) {
-      console.error('Unexpected error:', err)
-      alert('Something went wrong. Please try again.')
+      console.error("Unexpected error:", err)
+      alert("Something went wrong. Please try again.")
     }
   }
 
@@ -87,6 +93,11 @@ export default function PostPage() {
       <HomeButton />
       <h1 className="main-title">Add Food Item</h1>
       <form onSubmit={handleSubmit} className="food-form">
+        {/* CSRF hidden field if you want to submit to a NextAuth-secured API route */}
+        {csrfToken && (
+          <input type="hidden" name="csrfToken" value={csrfToken} />
+        )}
+
         <label>
           Food Title
           <input
@@ -161,7 +172,6 @@ export default function PostPage() {
           Add Food Item
         </button>
       </form>
-
     </main>
   )
 }

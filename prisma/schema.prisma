@@ -27,7 +27,7 @@ model food_items {
 
 
 model User {
-  id        String   @id @default(cuid())
+   id        String   @id @default(dbgenerated()) @db.Uuid
   email     String   @unique
   name      String?
   image     String?
@@ -35,3 +35,5 @@ model User {
   createdAt DateTime @default(now())
   food_items food_items[]
 }
+
+

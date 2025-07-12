@@ -42,6 +42,8 @@ export default function FoodsPage() {
   const total = items.reduce((sum, item) => sum + item.rate, 0)
 
   return (
+
+    <div className="">
     <main className="food-cart-container">
       <div className="flex">
         <LogoutButton />
@@ -78,5 +80,7 @@ export default function FoodsPage() {
         </div>
       )}
     </main>
+    </div>
+    
   )
 }
